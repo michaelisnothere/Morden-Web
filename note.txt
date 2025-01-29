@@ -1,3 +1,6 @@
 npm init -y
 npm i loadash
 https://www.npmjs.com/package/nodemon
+
+node "app name:
+npm install express
