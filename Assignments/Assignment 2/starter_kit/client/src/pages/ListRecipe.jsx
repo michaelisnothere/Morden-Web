@@ -9,11 +9,11 @@ function RecipeList() {
     fetch("http://localhost:8001/recipe")
       .then((response) => response.json())
       .then((data) => {
-        console.log(data)
+        console.log(data);
         setRecipes(data);
       })
       .catch((error) => console.error(error));
-  }, []);
+}, []);
 
   function handleDelete(id) {
     fetch(`http://localhost:8001/recipe/${id}`, { method: "DELETE" })
