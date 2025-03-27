@@ -2,8 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-const recipesRouter = require('./router/recipes_router');
 const cors = require('cors');
+const recipesRouter = require('./router/recipes_router');
 
 mongoose.connect(process.env.MONGO_DB);
 const db = mongoose.connection;
