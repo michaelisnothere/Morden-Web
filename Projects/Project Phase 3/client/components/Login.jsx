@@ -1,15 +1,45 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./styles.css";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loggedIN, setLoggedIn] = useState(false)
   const navigate = useNavigate();
 
   const clearFields = () => {
-    setUsername("");
+    setEmail("");
     setPassword("");
+  };
+
+  const handleLogin = async () => {
+    if (email === "" || password === "") {
+      alert("Please enter a username and password");
+      return;  // Added return to exit function
+    }
+    try {
+      const res = await fetch("http://localhost:8000/login/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+  
+      if (res.ok) {
+        console.log(data.message);
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        setLoggedIn(true)
+        navigate("/");
+      } else {
+        console.log(data.error);
+        alert(data.error);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Login failed. Please try again.");
+    }
   };
 
   return (
@@ -43,9 +73,9 @@ const Login = () => {
           <p>
             <input
               type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
             ></input>
           </p>
           <p>
@@ -59,15 +89,8 @@ const Login = () => {
 
           <ul>
             <li>
-              <button onClick={() => {
-                if(username === "" || password === ""){
-                  alert("Please enter a username and password");
-                }else{
-                  console.log("Username: ", username, "Password: ", password);
-                  navigate("/");
-                }
-              }}>Login</button>
-              <button onClick={(clearFields)}>Clear</button>
+              <button onClick={handleLogin}>Login</button>
+              <button onClick={clearFields}>Clear</button>
             </li>
             <li>
               <button onClick={() => navigate("/register")}>Register</button>

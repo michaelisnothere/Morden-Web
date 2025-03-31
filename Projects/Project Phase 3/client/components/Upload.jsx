@@ -1,15 +1,50 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./styles.css";
 
 const Upload = () => {
   const [postType, setPostType] = useState("");
+  const [file, setFile] = useState(null);
 
   useEffect(() => {
     fetch("http://localhost:8000/articles")
       .then(console.log("Articles fetched"))
       .catch((err) => console.error("error", err));
   }, []);
+
+  const handleUpload = async () => {
+    if (!file) {
+      alert("Please select a file to upload");
+      return;
+    }
+    if (!postType) {
+      alert("Please select a post type");
+      return;
+    }
+    
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("postType", postType);
+
+    try {
+      const result = await fetch("http://localhost:8000/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!result.ok) {
+        const error = await result.json();
+        console.error(error.message);
+        return;
+      }
+      const data = await result.json();
+      console.log(data);
+      alert("Upload successful!");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="container">
@@ -53,8 +88,13 @@ const Upload = () => {
             <option value="article">Article</option>
             <option value="video">Video</option>
           </select>
+          <input
+            id="file"
+            type="file"
+            onChange={(e) => setFile(e.target.files[0])}
+          />
         </div>
-        <button>Upload</button>
+        <button onClick={handleUpload}>Upload</button>
       </div>
       <div className="content-section">
         <p>Posts uploaded will go to respective categories</p>
