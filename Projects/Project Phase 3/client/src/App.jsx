@@ -7,6 +7,8 @@ import Articles from '../components/Articles';
 import Login from '../components/Login';
 import Upload from '../components/Upload';
 import Register from '../components/Register';
+import Profile from '../components/profile';
+
 
 const App = () => {
     return (
@@ -19,6 +21,7 @@ const App = () => {
                 <Route path='/login' element={<Login />} />
                 <Route path='/upload' element={<Upload />} />
                 <Route path="/register" element={<Register />} />
+                <Route path='/profile' element={<Profile />} />
             </Routes>
         </Router>
     );

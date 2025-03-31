@@ -7,6 +7,10 @@ mongoose.connect(process.env.MONGO_DB);
 const db = mongoose.connection;
 
 const registerRouter = require('./router/register_router')
+const loginRouter = require('./router/login_router')
+const uploadRouter = require('./router/upload_router')
+const profileRouter = require('./router/profile.router')
+
 
 
 app.use(cors())
@@ -38,15 +42,14 @@ app.get('/pictures', (req, res) => {
 })
 
 app.use('/register', registerRouter)
+app.use('/login', loginRouter)
+app.use('/upload', uploadRouter)
+app.use('/profile', profileRouter)
 
 app.get('/search', (req, res) => {
     // const search = req.query.q
     console.log("Searched for ", search)
     res.send("searchData")
-})
-app.post('/upload', (req, res) => {
-    // const { postType } = req.body
-    console.log("Uploaded media ")
 })
 
 app.listen(process.env.PORT, (err) => {

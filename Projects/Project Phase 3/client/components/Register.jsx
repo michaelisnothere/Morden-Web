@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./styles.css";
 
@@ -14,7 +14,7 @@ const Register = () => {
       password,
       email,
     };
-    
+
     fetch("http://localhost:8000/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -22,7 +22,7 @@ const Register = () => {
     })
       .then((res) => {
         if (res.ok) {
-          return res.json(); // Parse the JSON response
+          return res.json();
         } else {
           throw new Error("Failed to create user");
         }
@@ -32,7 +32,6 @@ const Register = () => {
       })
       .catch((err) => console.error("Error:", err));
   };
-  
 
   const clearFields = () => {
     setUsername("");

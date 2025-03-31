@@ -136,3 +136,10 @@ footer{
   display: flex;
   justify-content: space-between;
 }
+.article-image {
+  max-width: 100%; 
+  height: auto;
+  max-height: 200px; 
+  object-fit: cover;
+
+}

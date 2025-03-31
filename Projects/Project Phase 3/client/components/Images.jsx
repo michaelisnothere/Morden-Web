@@ -1,14 +1,69 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "./styles.css";
+import { pxAPI } from "./config";
 
 const Images = () => {
   const [pictures, setPictures] = useState([]);
+  const [loading, setLoading] = useState(true)
+  const navigate = useNavigate();
+
+
+  // useEffect(() => {
+  //   fetch("http://localhost:8000/pictures")
+  //     .then((res) => setPictures(res.data))
+  //     .catch((err) => console.error("error", err));
+  // }, []);
+
+  //stand in for database uploaded images, pixabay will be used to simlate user uploads
+
+  const fetchPictures = async (params = '') => {
+    try{
+      setLoading(true);
+      const res = await fetch(`https://pixabay.com/api/?key=${pxAPI}&q=${params}&image_type=photo&per_page=10&order=popular&safesearch=true`)
+      const data = await res.json();
+      setPictures(data.hits || [])
+    } catch(err){
+      console.log(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchNature = async () => {
+    await fetchPictures('nature')
+  }
+  const fetchCity = async () => {
+    await fetchPictures('city')
+  }
+  const fetchAnimal = async () => {
+    await fetchPictures('animal')
+  }
+
+  const fetchPopular = async () => {
+    try{
+      setLoading(true);
+      const res = await fetch(`https://pixabay.com/api/?key=${pxAPI}&image_type=photo&per_page=20&order=popular&safesearch=true`)
+      const data = await res.json();
+      setPictures(data.hits || [])
+    } catch(err){
+      console.log(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  
+  const upVideos = () => {
+    navigate("/upload");
+  };
+
   useEffect(() => {
-    fetch("http://localhost:8000/pictures")
-      .then((res) => setPictures(res.data))
-      .catch((err) => console.error("error", err));
-  }, []);
+    fetchPictures()
+  }, [])
+
+  if (loading) return <div>Loading...</div>;
+
   return (
     <div className="container">
       <h1>Images Page</h1>
@@ -44,21 +99,24 @@ const Images = () => {
             <li>
               <input type="text" placeholder="Search"></input>
             </li>
-            <li>Popular</li>
-            <li>Trending</li>
-            <li>Recently Uploaded</li>
-            <li>Upload Image</li>
+            <li onClick={fetchPopular}>Popular</li>
+            <li onClick={fetchNature}>Nature</li>
+            <li onClick={fetchCity}>City Landscapes</li>
+            <li onClick={fetchAnimal}>Animals</li>
+            <li onClick={upVideos}>Upload Picture</li>
           </ul>
         </div>
         <p>This is where text about Images will go</p>
       </div>
       <div className="content-section">
-        {pictures.map((img, index) => (
-          <div key={index} className="item-card">
-            <h3>{img.Title}</h3>
-            <p>{img.Views}</p>
-            <p>{img.DateUpload}</p>
-          </div>
+        {pictures.map((picture) => (
+          <div key={picture.id} className="image-card">
+            <img src={picture.webformatURL} alt={picture.tags} className="image" />
+            <p>Tags: {picture.tags}</p>
+            <p>User: {picture.user}</p>
+            <p>Views: {picture.views}</p>
+            <p>Likes: {picture.likes}</p>
+            </div>
         ))}
       </div>
       <footer>

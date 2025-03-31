@@ -1,14 +1,56 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link,  useNavigate} from 'react-router-dom';
 import './styles.css';
+import { newsAPI } from './config';
 
 const Articles = () => {
     const [articles, setArticles] = useState([]);
+    const [loading, setLoading] = useState(true)
+    const navigate = useNavigate();
+
+
+    // useEffect(() => {
+    //         fetch('http://localhost:8000/articles')
+    //         .then((res) => setArticles(res.data))
+    //         .catch((err) => console.error("error", err));
+    // }, []);
+
+    //stand in for database uploaded articles, newsAPI will be used to simulate user uploads
+
+    const fetchArticles = async (params = 'technology') => {
+        try{
+            setLoading(true)
+            const res = await fetch(`https://newsapi.org/v2/top-headlines?country=us&category=${params}&apiKey=${newsAPI}`)
+            const data = await res.json();
+            setArticles(data.articles || [])
+        } catch(err) {
+            console.log(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const fetchHealth = async () => {
+        await fetchArticles('health')
+    }
+    const fetchEntertain = async () => {
+        await fetchArticles('entertainment')
+    }    
+    const fetchBuis = async () => {
+        await fetchArticles('business')
+    }
+    const fetchPopular = async () => {
+        await fetchArticles('technology')
+    }
+
+    const uploadArticle = () => {
+        navigate('/upload')
+    }
     useEffect(() => {
-            fetch('http://localhost:8000/articles')
-            .then((res) => setArticles(res.data))
-            .catch((err) => console.error("error", err));
-    }, []);
+        fetchArticles('business')
+    }, [])
+
+    if (loading) return <div>Loading...</div>
     return (
         <div className="container">
             <h1>Articles Page</h1>
@@ -28,21 +70,22 @@ const Articles = () => {
                         <li>
                             <input type='text' placeholder='Search'></input>
                         </li>
-                        <li>Popular</li>
-                        <li>Trending</li>
-                        <li>Recently Uploaded</li>
-                        <li>Upload Article</li>
+                        <li onClick={fetchPopular}>Popular</li>
+                        <li onClick={fetchEntertain}>Entertainment</li>
+                        <li onClick={fetchBuis}>Buisness</li>
+                        <li onClick={fetchHealth}>Health</li>
+                        <li onClick={uploadArticle}>Upload Article</li>
                     </ul>
                 </div>
                 <p>This is where text about articles will go</p>
             </div>
             <div className="content-section">
-                {articles.map((art, index) => (
-                    <div key={index} className="item-card">
-                        <h3>{art.Title}</h3>
-                        <p>thumbnail placeholder</p>
-                        <p>{art.Views}</p>
-                        <p>{art.DateUpload}</p>
+                {articles.map((article) => (
+                    <div key={article.url} className="article-card">
+                        <img src={article.urlToImage} alt={article.title} className="article-image" />
+                        <h3>{article.title}</h3>
+                        <p>{article.author}</p>
+                        <p>{article.description}</p>
                     </div>
                 ))}
             </div>
