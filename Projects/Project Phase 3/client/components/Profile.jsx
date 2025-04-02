@@ -54,12 +54,12 @@ const Profile = () => {
   };
 
   const handleEditToggle = () => {
-    setIsEditing(!isEditing); // Toggle edit mode
+    setIsEditing(!isEditing);
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setEditedInfo((prev) => ({ ...prev, [name]: value })); // Update edited info
+    setEditedInfo((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSave = async () => {
@@ -79,14 +79,35 @@ const Profile = () => {
       });
       if (res.ok) {
         const updatedUser = await res.json();
-        setUserInfo(updatedUser.user); // Update user info with the response
-        setIsEditing(false); // Exit edit mode
+        setUserInfo(updatedUser.user);
+        setIsEditing(false);
         console.log("Profile updated successfully");
       } else {
         console.error("Failed to update profile");
       }
     } catch (err) {
-      console.error("Error updating profile:", err);
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async () => {
+    console.log("Delete Account Placeholder");
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found");
+    }
+    const deletedUser = await fetch("http://localhost:8000/profile", {
+      method: 'DELETE',
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      }
+    });
+    if (deletedUser.ok) {
+      console.log("User deleted successfully");
+      navigate('/')
+    } else {
+      console.error("Failed to delete user");
     }
   };
 
@@ -157,6 +178,8 @@ const Profile = () => {
                   <strong>Email:</strong> {userInfo.email}
                 </p>
                 <button onClick={handleEditToggle}>Edit</button>
+
+                <button onClick={handleDelete}>Delete Account</button>
               </div>
             )}
             <button onClick={handleLogout}>Log out</button>
