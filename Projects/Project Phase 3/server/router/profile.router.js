@@ -54,4 +54,20 @@ router.put('/', authToken, async (req, res) => {
         res.status(500).json({ error: 'server error'})
     }
 })
+
+router.delete('/', authToken, async (req, res) => {
+    try{
+        const deleteUser = await User.findByIdAndDelete(
+            req.user.id)
+
+            if(!deleteUser){
+                console.log('user Not Found')
+                return res.status(410).json({ error: 'user not found'})
+            }
+            res.status(200).json({ message: 'user Deleted'})
+            console.log('User Deleted')
+    } catch (err) {
+        console.log(err)
+    }
+})
 module.exports = router;
