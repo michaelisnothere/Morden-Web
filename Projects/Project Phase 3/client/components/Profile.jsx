@@ -9,6 +9,8 @@ const Profile = () => {
   const [editedInfo, setEditedInfo] = useState({ username: "", email: "" });
   const navigate = useNavigate();
 
+  // failing to get to profile page while home screen
+
   useEffect(() => {
     const fetchInfo = async () => {
       const token = localStorage.getItem("token");
