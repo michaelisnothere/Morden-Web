@@ -5,9 +5,8 @@ import { pxAPI } from "./config";
 
 const Images = () => {
   const [pictures, setPictures] = useState([]);
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
 
   // useEffect(() => {
   //   fetch("http://localhost:8000/pictures")
@@ -17,50 +16,53 @@ const Images = () => {
 
   //stand in for database uploaded images, pixabay will be used to simlate user uploads
 
-  const fetchPictures = async (params = '') => {
-    try{
+  const fetchPictures = async (params = "") => {
+    try {
       setLoading(true);
-      const res = await fetch(`https://pixabay.com/api/?key=${pxAPI}&q=${params}&image_type=photo&per_page=10&order=popular&safesearch=true`)
+      const res = await fetch(
+        `https://pixabay.com/api/?key=${pxAPI}&q=${params}&image_type=photo&per_page=10&order=popular&safesearch=true`
+      );
       const data = await res.json();
-      setPictures(data.hits || [])
-    } catch(err){
-      console.log(err)
+      setPictures(data.hits || []);
+    } catch (err) {
+      console.log(err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const fetchNature = async () => {
-    await fetchPictures('nature')
-  }
+    await fetchPictures("nature");
+  };
   const fetchCity = async () => {
-    await fetchPictures('city')
-  }
+    await fetchPictures("city");
+  };
   const fetchAnimal = async () => {
-    await fetchPictures('animal')
-  }
+    await fetchPictures("animal");
+  };
 
   const fetchPopular = async () => {
-    try{
+    try {
       setLoading(true);
-      const res = await fetch(`https://pixabay.com/api/?key=${pxAPI}&image_type=photo&per_page=20&order=popular&safesearch=true`)
+      const res = await fetch(
+        `https://pixabay.com/api/?key=${pxAPI}&image_type=photo&per_page=20&order=popular&safesearch=true`
+      );
       const data = await res.json();
-      setPictures(data.hits || [])
-    } catch(err){
-      console.log(err)
+      setPictures(data.hits || []);
+    } catch (err) {
+      console.log(err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  
   const upVideos = () => {
     navigate("/upload");
   };
 
   useEffect(() => {
-    fetchPictures()
-  }, [])
+    fetchPictures();
+  }, []);
 
   if (loading) return <div>Loading...</div>;
 
@@ -111,12 +113,16 @@ const Images = () => {
       <div className="content-section">
         {pictures.map((picture) => (
           <div key={picture.id} className="image-card">
-            <img src={picture.webformatURL} alt={picture.tags} className="image" />
+            <img
+              src={picture.webformatURL}
+              alt={picture.tags}
+              className="image"
+            />
             <p>Tags: {picture.tags}</p>
             <p>User: {picture.user}</p>
             <p>Views: {picture.views}</p>
             <p>Likes: {picture.likes}</p>
-            </div>
+          </div>
         ))}
       </div>
       <footer>

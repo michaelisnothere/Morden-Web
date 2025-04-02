@@ -5,9 +5,11 @@ import "./styles.css";
 const Profile = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [userInfo, setUserInfo] = useState(null);
-  const [isEditing, setIsEditing] = useState(false); // State to toggle edit mode
-  const [editedInfo, setEditedInfo] = useState({ username: "", email: "" }); // State for edited info
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedInfo, setEditedInfo] = useState({ username: "", email: "" });
   const navigate = useNavigate();
+
+  // failing to get to profile page while home screen
 
   useEffect(() => {
     const fetchInfo = async () => {
@@ -26,7 +28,10 @@ const Profile = () => {
         if (res.ok) {
           const data = await res.json();
           setUserInfo(data.user);
-          setEditedInfo({ username: data.user.username, email: data.user.email }); // Initialize edited info
+          setEditedInfo({
+            username: data.user.username,
+            email: data.user.email,
+          });
         } else {
           console.error("Failed to fetch user info");
         }
@@ -97,15 +102,15 @@ const Profile = () => {
       console.error("No token found");
     }
     const deletedUser = await fetch("http://localhost:8000/profile", {
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: token,
-      }
+      },
     });
     if (deletedUser.ok) {
       console.log("User deleted successfully");
-      navigate('/')
+      navigate("/");
     } else {
       console.error("Failed to delete user");
     }

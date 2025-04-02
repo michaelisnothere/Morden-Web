@@ -13,16 +13,16 @@ router.post("/", upload.single("file"), (req, res) => {
     if (!postType || !file) {
       return res.status(400).json({ error: "Post type and file are required" });
     }
-    
+
     const dir = `./uploads/${postType}`;
-    
+
     const filename = Date.now() + "--" + file.originalname;
     const filepath = dir + "/" + filename;
     fs.writeFileSync(filepath, file.buffer);
-    
-    res.status(200).json({ 
-      message: `Upload successful to ${postType} directory`, 
-      filename
+
+    res.status(200).json({
+      message: `Upload successful to ${postType} directory`,
+      filename,
     });
   } catch (err) {
     console.error(err);

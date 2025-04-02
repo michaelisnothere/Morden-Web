@@ -5,7 +5,7 @@ import "./styles.css";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loggedIN, setLoggedIn] = useState(false)
+  const [loggedIN, setLoggedIn] = useState(false);
   const navigate = useNavigate();
 
   const clearFields = () => {
@@ -16,7 +16,7 @@ const Login = () => {
   const handleLogin = async () => {
     if (email === "" || password === "") {
       alert("Please enter a username and password");
-      return;  // Added return to exit function
+      return;
     }
     try {
       const res = await fetch("http://localhost:8000/login/login", {
@@ -25,12 +25,12 @@ const Login = () => {
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
-  
+
       if (res.ok) {
         console.log(data.message);
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        setLoggedIn(true)
+        setLoggedIn(true);
         navigate("/");
       } else {
         console.log(data.error);

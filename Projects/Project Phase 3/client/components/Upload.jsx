@@ -21,7 +21,6 @@ const Upload = () => {
       alert("Please select a post type");
       return;
     }
-    
 
     const formData = new FormData();
     formData.append("file", file);

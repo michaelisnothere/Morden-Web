@@ -8,7 +8,9 @@ const Videos = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const fetchVideos = async (params = '') => {
+  //Stand in for user uploaded videos is the youtube API, simulates user uploads
+
+  const fetchVideos = async (params = "") => {
     try {
       setLoading(true);
       const res = await fetch(
@@ -28,17 +30,16 @@ const Videos = () => {
   };
 
   const fetchTop = async () => {
-    await fetchVideos('&videoCategoryId=24');
+    await fetchVideos("&videoCategoryId=24");
   };
 
   const fetchMost = async () => {
-    await fetchVideos('&videoCategoryId=20');
+    await fetchVideos("&videoCategoryId=20");
   };
 
   const fetchMusic = async () => {
-    await fetchVideos('&videoCategoryId=10');
+    await fetchVideos("&videoCategoryId=10");
   };
-
 
   useEffect(() => {
     fetchPopular();
@@ -55,20 +56,36 @@ const Videos = () => {
       <h1>Videos Page</h1>
       <nav>
         <ul>
-          <li><Link to="/">Home Page</Link></li>
-          <li><Link to="/videos">Videos</Link></li>
-          <li><Link to="/pictures">Pictures</Link></li>
-          <li><Link to="/articles">Articles</Link></li>
-          <li><Link to="/upload">Upload Post</Link></li>
-          <li><Link to="/login">Login</Link></li>
-          <li><Link to="/register">Create Account</Link></li>
+          <li>
+            <Link to="/">Home Page</Link>
+          </li>
+          <li>
+            <Link to="/videos">Videos</Link>
+          </li>
+          <li>
+            <Link to="/pictures">Pictures</Link>
+          </li>
+          <li>
+            <Link to="/articles">Articles</Link>
+          </li>
+          <li>
+            <Link to="/upload">Upload Post</Link>
+          </li>
+          <li>
+            <Link to="/login">Login</Link>
+          </li>
+          <li>
+            <Link to="/register">Create Account</Link>
+          </li>
         </ul>
       </nav>
       <div className="content-section">
         <h2>Videos</h2>
         <div>
           <ul className="category-menu">
-            <li><input type="text" placeholder="Search"></input></li>
+            <li>
+              <input type="text" placeholder="Search"></input>
+            </li>
             <li onClick={fetchPopular}>Popular</li>
             <li onClick={fetchTop}>Entertainment</li>
             <li onClick={fetchMost}>Gaming</li>

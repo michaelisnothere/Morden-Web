@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./styles.css";
 
@@ -21,6 +21,7 @@ const Homepage = () => {
       console.error("Error during search:", error);
     }
   };
+  //fix search feature and add login functionality site wide
 
   return (
     <div className="container">
