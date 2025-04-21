@@ -4,18 +4,21 @@ const User = require("../models/register");
 const jwt = require("jsonwebtoken");
 
 const authToken = (req, res, next) => {
-  const token = req.headers["authorization"];
-  if (!token) {
+  const authHeader = req.headers["authorization"];
+  if (!authHeader) {
     console.log("No token found");
     return res.status(401).json({ error: "Access Denied" });
   }
+  const token = authHeader.startsWith("Bearer ")
+    ? authHeader.substring(7)
+    : authHeader;
   try {
     const verified = jwt.verify(token, process.env.JWT_SECRET);
     req.user = verified;
     console.log("Token verified");
     next();
   } catch (err) {
-    console.log("Invaild token");
+    console.log("Invalid token");
     return res.status(400).json({ error: "Invalid token" });
   }
 };
@@ -28,6 +31,7 @@ router.get("/", authToken, async (req, res) => {
       return res.status(401).json({ error: "user not found" });
     }
     console.log("User found");
+    console.log(user);
     return res.status(200).json({ user });
   } catch (err) {
     console.log(err);
@@ -69,4 +73,26 @@ router.delete("/", authToken, async (req, res) => {
     console.log(err);
   }
 });
+
+router.delete("/comment", authToken, async (req, res) => {
+  try {
+    const { commentId } = req.body;
+    if (!commentId) {
+      return res.status(400).json({ error: "Comment not Found" });
+    }
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+    user.comments = user.comments.filter(
+      (comment) => comment._id.toString() !== commentId
+    );
+    await user.save();
+    res.status(200).json({ message: "Comment deleted successfully.", user });
+  } catch (err) {
+    console.log("Error deleting comment:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 module.exports = router;

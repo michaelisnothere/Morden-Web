@@ -1,18 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./styles.css";
-import { pxAPI } from "./config";
+import '../shared/styles.css';
 
 const Images = () => {
   const [pictures, setPictures] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   fetch("http://localhost:8000/pictures")
-  //     .then((res) => setPictures(res.data))
-  //     .catch((err) => console.error("error", err));
-  // }, []);
+  const isLoggedIn = !!localStorage.getItem("token");
+  const [search, setSearch] = useState('')
 
   //stand in for database uploaded images, pixabay will be used to simlate user uploads
 
@@ -20,7 +15,7 @@ const Images = () => {
     try {
       setLoading(true);
       const res = await fetch(
-        `https://pixabay.com/api/?key=${pxAPI}&q=${params}&image_type=photo&per_page=10&order=popular&safesearch=true`
+        `https://pixabay.com/api/?key=${import.meta.env.VITE_PX_API}&q=${params}&image_type=photo&per_page=10&order=popular&safesearch=true`
       );
       const data = await res.json();
       setPictures(data.hits || []);
@@ -41,11 +36,27 @@ const Images = () => {
     await fetchPictures("animal");
   };
 
+  const handleSearch = async () => {
+    try{
+    if (!search) {
+      alert("Please enter a search term.");
+      return;
+    }
+    setLoading(true)
+    await fetchPictures(search);
+   }catch(err) {
+    console.log('err searching' , err)
+   } finally {
+    setLoading(false)
+    setSearch('')
+   }
+  };
+
   const fetchPopular = async () => {
     try {
       setLoading(true);
       const res = await fetch(
-        `https://pixabay.com/api/?key=${pxAPI}&image_type=photo&per_page=20&order=popular&safesearch=true`
+        `https://pixabay.com/api/?key=${import.meta.env.VITE_PX_API}&image_type=photo&per_page=20&order=popular&safesearch=true`
       );
       const data = await res.json();
       setPictures(data.hits || []);
@@ -64,48 +75,27 @@ const Images = () => {
     fetchPictures();
   }, []);
 
+
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="container">
-      <h1>Images Page</h1>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/">Home Page</Link>
-          </li>
-          <li>
-            <Link to="/videos">Videos</Link>
-          </li>
-          <li>
-            <Link to="/pictures">Pictures</Link>
-          </li>
-          <li>
-            <Link to="/articles">Articles</Link>
-          </li>
-          <li>
-            <Link to="/upload">Upload Post</Link>
-          </li>
-          <li>
-            <Link to="/login">Login</Link>
-          </li>
-          <li>
-            <Link to="/register">Create Account</Link>
-          </li>
-        </ul>
-      </nav>
+    <div className="container">      
       <div className="content-section">
         <h2>Images</h2>
         <div>
           <ul className="category-menu">
             <li>
-              <input type="text" placeholder="Search"></input>
+              <input type="text" 
+              placeholder="Search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}></input>
+              <button onClick={() => handleSearch()}>Search</button>
             </li>
             <li onClick={fetchPopular}>Popular</li>
             <li onClick={fetchNature}>Nature</li>
             <li onClick={fetchCity}>City Landscapes</li>
             <li onClick={fetchAnimal}>Animals</li>
-            <li onClick={upVideos}>Upload Picture</li>
+            {isLoggedIn && <li onClick={upVideos}>Upload Article</li>}
           </ul>
         </div>
         <p>This is where text about Images will go</p>
@@ -113,11 +103,13 @@ const Images = () => {
       <div className="content-section">
         {pictures.map((picture) => (
           <div key={picture.id} className="image-card">
+            <Link to={`/image-details/${picture.id}`} state={{ picture }}>
             <img
               src={picture.webformatURL}
               alt={picture.tags}
               className="image"
             />
+            </Link>
             <p>Tags: {picture.tags}</p>
             <p>User: {picture.user}</p>
             <p>Views: {picture.views}</p>
@@ -125,9 +117,6 @@ const Images = () => {
           </div>
         ))}
       </div>
-      <footer>
-        <p>Place Holder for imporant links</p>
-      </footer>
     </div>
   );
 };

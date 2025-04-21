@@ -10,6 +10,7 @@ const registerRouter = require("./router/register_router");
 const loginRouter = require("./router/login_router");
 const uploadRouter = require("./router/upload_router");
 const profileRouter = require("./router/profile.router");
+const commentRouter = require('./router/comment_router')
 
 app.use(cors());
 app.use(express.json());
@@ -43,12 +44,9 @@ app.use("/register", registerRouter);
 app.use("/login", loginRouter);
 app.use("/upload", uploadRouter);
 app.use("/profile", profileRouter);
-
-app.get("/search", (req, res) => {
-  // const search = req.query.q
-  console.log("Searched for ", search);
-  res.send("searchData");
-});
+app.use('/video-details', commentRouter)
+app.use('/image-details', commentRouter)
+app.use('/article-details', commentRouter)
 
 app.listen(process.env.PORT, (err) => {
   if (err) {

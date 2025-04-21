@@ -1,30 +1,29 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "./styles.css";
+import { useNavigate, Link } from "react-router-dom";
+import '../shared/styles.css';
+import {
+  getAuther,
+  logout,
+  getCurrentUser,
+} from "../../server/authenticator/auth";
 
 const Profile = () => {
-  const [searchQuery, setSearchQuery] = useState("");
   const [userInfo, setUserInfo] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedInfo, setEditedInfo] = useState({ username: "", email: "" });
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
-  // failing to get to profile page while home screen
 
   useEffect(() => {
     const fetchInfo = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.error("No token found");
-        return;
-      }
       try {
         const res = await fetch("http://localhost:8000/profile", {
           method: "GET",
           headers: {
-            Authorization: token,
+            ...getAuther(),
           },
         });
+
         if (res.ok) {
           const data = await res.json();
           setUserInfo(data.user);
@@ -33,31 +32,24 @@ const Profile = () => {
             email: data.user.email,
           });
         } else {
-          console.error("Failed to fetch user info");
+          alert("Failed to fetch user info. Logging out...");
+          handleLogout();
         }
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching user info:", err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchInfo();
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/");
-    console.log("User logged out");
-  };
-
-  const handleSearch = async () => {
-    try {
-      fetch("http://localhost:8000/search", { params: { q: searchQuery } });
-      console.log("Search results: placeholder");
-    } catch (error) {
-      console.error("Error during search:", error);
+    if (window.confirm("Are you sure you want to log out?")) {
+      logout();
+      navigate("/");
     }
   };
-
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
   };
@@ -68,27 +60,38 @@ const Profile = () => {
   };
 
   const handleSave = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("No token found");
-      return;
-    }
     try {
       const res = await fetch("http://localhost:8000/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: token,
+          ...getAuther(),
         },
         body: JSON.stringify(editedInfo),
       });
+
       if (res.ok) {
         const updatedUser = await res.json();
         setUserInfo(updatedUser.user);
         setIsEditing(false);
         console.log("Profile updated successfully");
+        const currentUser = getCurrentUser();
+        if (currentUser) {
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
+              ...currentUser,
+              username: editedInfo.username,
+              email: editedInfo.email,
+            })
+          );
+        }
       } else {
-        console.error("Failed to update profile");
+        const errorData = await res.json();
+        console.error("Failed to update profile:", errorData.error);
+        if (res.status === 400 || res.status === 401) {
+          handleLogout();
+        }
       }
     } catch (err) {
       console.error(err);
@@ -96,57 +99,60 @@ const Profile = () => {
   };
 
   const handleDelete = async () => {
-    console.log("Delete Account Placeholder");
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("No token found");
-    }
-    const deletedUser = await fetch("http://localhost:8000/profile", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token,
-      },
-    });
-    if (deletedUser.ok) {
-      console.log("User deleted successfully");
-      navigate("/");
-    } else {
-      console.error("Failed to delete user");
+    try {
+      const res = await fetch("http://localhost:8000/profile", {
+        method: "DELETE",
+        headers: {
+          ...getAuther(),
+        },
+      });
+
+      if (res.ok) {
+        console.log("User deleted successfully");
+        logout();
+        navigate("/");
+      }
+      else {
+        console.error("failed to delete user");
+      }
+    } catch (err) {
+      console.error("Delete account error:", err);
     }
   };
 
+  const handleCommentDelete = async (commentId) => {
+    try {
+      const res = await fetch("http://localhost:8000/profile/comment", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuther(),
+        },
+        body: JSON.stringify({ commentId }),
+      });
+      if (res.ok) {
+        console.log("Comment deleted successfully");
+        setUserInfo((prevUserInfo) => ({
+          ...prevUserInfo,
+          comments: prevUserInfo.comments.filter((comment) => comment._id !== commentId),
+        }));
+      } else {
+        console.error("Failed to delete comment");
+      }
+    } catch (err) {
+      console.error("Error deleting comment:", err);
+    }
+  };
+
+  if (loading)
+    return (
+      <div className="container">
+        <div className="content-section">Loading user profile...</div>
+      </div>
+    );
+
   return (
     <div className="container">
-      <h1>Logged in</h1>
-      <nav>
-        <ul>
-          <li>
-            <input
-              type="text"
-              placeholder="Search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button onClick={handleSearch}>Search</button>
-          </li>
-          <li>
-            <Link to="/videos">Videos</Link>
-          </li>
-          <li>
-            <Link to="/pictures">Pictures</Link>
-          </li>
-          <li>
-            <Link to="/articles">Articles</Link>
-          </li>
-          <li>
-            <Link to="/upload">Upload Post</Link>
-          </li>
-          <li>
-            <Link to="/">Home </Link>
-          </li>
-        </ul>
-      </nav>
       <div className="content-section">
         <h2>This is the profile Page</h2>
         {userInfo ? (
@@ -193,9 +199,27 @@ const Profile = () => {
           <p>Loading user info...</p>
         )}
       </div>
-      <footer>
-        <p>Place Holder for important links</p>
-      </footer>
+      <div className="user-section">
+        <h2>User Comments</h2>
+        {userInfo.comments && userInfo.comments.length > 0 ? (
+          <ul>
+            {userInfo.comments.map((comment) => (
+              <div className="comments" key={comment._id}>
+                <li>
+                  <p>Content Type : {comment.contentType}</p>
+                  <p>Comment : {comment.content}</p>
+                  <p>Date posted :{new Date(comment.date).toLocaleString()}</p>
+                </li>
+                <button onClick={() => handleCommentDelete(comment._id)}>
+                  Delete
+                </button>
+              </div>
+            ))}
+          </ul>
+        ) : (
+          <p>No comments found.</p>
+        )}
+      </div>
     </div>
   );
 };

@@ -4,7 +4,7 @@ const User = require("../models/register");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-router.post("/login", async (req, res) => {
+router.post("/", async (req, res) => {
   const { email, password } = req.body;
   console.log("Received data:", req.body);
 
@@ -20,7 +20,7 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Incorrect Password" });
     }
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      { id: user._id, email: user.email, username: user.username },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
