@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "./styles.css";
+import { useNavigate } from "react-router-dom";
+import '../shared/styles.css';
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -41,32 +41,6 @@ const Register = () => {
 
   return (
     <div className="container">
-      <h1>Register</h1>
-      <nav>
-        <ul>
-          <li>
-            <input placeholder="Search"></input>
-          </li>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/videos">Videos</Link>
-          </li>
-          <li>
-            <Link to="/pictures">Pictures</Link>
-          </li>
-          <li>
-            <Link to="/articles">Articles</Link>
-          </li>
-          <li>
-            <Link to="/upload">Upload Post</Link>
-          </li>
-          <li>
-            <Link to="/login">Login</Link>
-          </li>
-        </ul>
-      </nav>
       <div className="content">
         <h2>Enter in Info Below</h2>
         <div className="login">
@@ -116,9 +90,6 @@ const Register = () => {
           </ul>
         </div>
       </div>
-      <footer>
-        <p>Place Holder for imporant links</p>
-      </footer>
     </div>
   );
 };
