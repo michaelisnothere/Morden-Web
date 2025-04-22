@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getAuther } from "../../server/authenticator/auth";
-import '../shared/styles.css';
-
+import "../shared/styles.css";
 
 const ImageDetails = () => {
   const { id } = useParams();
@@ -32,7 +31,9 @@ const ImageDetails = () => {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/image-details/picture/${id}`);
+        const res = await fetch(
+          `http://localhost:8000/image-details/picture/${id}`
+        );
         if (res.ok) {
           const data = await res.json();
           setComments(data.comments || []);
@@ -73,7 +74,6 @@ const ImageDetails = () => {
       console.log("Comment posted successfully:", data);
       setUserComment("");
 
-      // Fetch updated comments after posting
       const commentres = await fetch(
         `http://localhost:8000/image-details/picture/${id}`
       );
@@ -91,29 +91,41 @@ const ImageDetails = () => {
 
   return (
     <div className="container">
-      <h1>Picture Details</h1>
-
-      <img src={picture.largeImageURL} alt={picture.tags} />
-      <p>
-        <strong>
-          Uploader: {picture.user}
-          {picture.userImageURL ? (
-            <img src={picture.userImageURL} alt="Uploader profile" />
-          ) : (
-            <p>No profile picture</p>
-          )}
-        </strong>
-      </p>
-      <p>
-        <strong>Description: {picture.tags}</strong>
-      </p>
-      <p>
-        <strong>Views: {picture.views}</strong>
-      </p>
-      <p>
-        <strong>Tags: {picture.tags}</strong>
-      </p>
-
+      <div className="content-header">
+        <h1>Here is a closer look</h1>
+      </div>
+      <div className="image-details">
+        <img
+          className="image-thumbnail"
+          src={picture?.largeImageURL || "https://via.placeholder.com/400"}
+          alt={picture?.tags || "No image available"}
+        />
+        <div className="image-info">
+          <p>
+            <strong>Uploader:</strong> {picture.user}
+            {picture.userImageURL ? (
+              <div className="uploader-profile">
+                <img src={picture.userImageURL} alt="Uploader profile" />
+              </div>
+            ) : (
+              <p>No profile picture</p>
+            )}
+          </p>
+          <p>
+            <strong>Description:</strong> {picture.tags}
+          </p>
+          <p>
+            <strong>Views:</strong> {picture.views}
+          </p>
+          <div className="tags">
+            {picture.tags.split(",").map((tag, index) => (
+              <span key={index} className="tag">
+                {tag.trim()}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
       <div className="comments-section">
         <h1>Comments</h1>
         <input
@@ -122,21 +134,14 @@ const ImageDetails = () => {
           onChange={(e) => setUserComment(e.target.value)}
           value={userComment}
         />
-        <button
-          onClick={() => {
-            console.log("Uploading comment...");
-            handleComment();
-          }}
-        >
-          Post
-        </button>
+        <button onClick={handleComment}>Post</button>
         <div className="comments-list">
           <h2>Comments ({comments.length})</h2>
           {comments.length > 0 ? (
             comments.map((comment) => (
               <div key={comment._id} className="comment">
                 <p className="comment-user">
-                  <strong>{comment.username || "Anonymous"}</strong> •{" "}
+                  <strong>{comment.username}</strong> •{" "}
                   {new Date(comment.date).toLocaleString()}
                 </p>
                 <p className="comment-content">{comment.content}</p>

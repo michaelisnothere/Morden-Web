@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import '../shared/styles.css';
+import '../shared/profile.css';
 import {
   getAuther,
   logout,
@@ -74,7 +74,6 @@ const Profile = () => {
         const updatedUser = await res.json();
         setUserInfo(updatedUser.user);
         setIsEditing(false);
-        console.log("Profile updated successfully");
         const currentUser = getCurrentUser();
         if (currentUser) {
           localStorage.setItem(
@@ -99,6 +98,13 @@ const Profile = () => {
   };
 
   const handleDelete = async () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete your account? This action cannot be undone."
+    );
+    if (!confirmDelete) {
+      return;
+    }
+  
     try {
       const res = await fetch("http://localhost:8000/profile", {
         method: "DELETE",
@@ -106,14 +112,12 @@ const Profile = () => {
           ...getAuther(),
         },
       });
-
+  
       if (res.ok) {
-        console.log("User deleted successfully");
         logout();
         navigate("/");
-      }
-      else {
-        console.error("failed to delete user");
+      } else {
+        console.error("Failed to delete user");
       }
     } catch (err) {
       console.error("Delete account error:", err);
@@ -154,13 +158,13 @@ const Profile = () => {
   return (
     <div className="container">
       <div className="content-section">
-        <h2>This is the profile Page</h2>
+        <h2>This is the profile Page Delete and Edit until you cant</h2>
         {userInfo ? (
           <div>
             {isEditing ? (
               <div>
                 <p>
-                  <strong>Username:</strong>{" "}
+                  <strong>Username:</strong>
                   <input
                     type="text"
                     name="username"

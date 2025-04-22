@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getAuther } from "../../server/authenticator/auth";
-import '../shared/styles.css';
-
+import "../shared/detailstyles.css";
 
 const VideoDetails = () => {
   const { id } = useParams();
@@ -80,7 +79,6 @@ const VideoDetails = () => {
       console.log("Comment posted successfully:", data);
       setUserComment("");
 
-      // Fetch updated comments after posting
       const commentres = await fetch(
         `http://localhost:8000/video-details/video/${encodeURIComponent(
           `https://www.youtube.com/watch?v=${id}`
@@ -100,18 +98,27 @@ const VideoDetails = () => {
 
   return (
     <div className="container">
-      <h1>{video.snippet.title}</h1>
-      <img src={video.snippet.thumbnails.high.url} alt={video.snippet.title} />
-      <p>
-        <strong>Channel:</strong> {video.snippet.channelTitle}
-      </p>
-      <p>
-        <strong>Description:</strong> {video.snippet.description}
-      </p>
-      <p>
-        <strong>Views:</strong> {video.statistics.viewCount}
-      </p>
-
+      <div className="content-header">
+        <h1>{video.snippet.title}</h1>
+      </div>
+      <div className="video-details">
+        <img
+          className="video-thumbnail"
+          src={video.snippet.thumbnails.high.url}
+          alt={video.snippet.title}
+        />
+        <div className="video-info">
+          <p>
+            <strong>Channel:</strong> {video.snippet.channelTitle}
+          </p>
+          <p>
+            <strong>Description:</strong> {video.snippet.description}
+          </p>
+          <p>
+            <strong>Views:</strong> {video.statistics.viewCount}
+          </p>
+        </div>
+      </div>
       <div className="comments-section">
         <h1>Comments</h1>
         <input
@@ -120,14 +127,7 @@ const VideoDetails = () => {
           onChange={(e) => setUserComment(e.target.value)}
           value={userComment}
         />
-        <button
-          onClick={() => {
-            console.log("Uploading comment...");
-            handleComment();
-          }}
-        >
-          Post
-        </button>
+        <button onClick={handleComment}>Post</button>
         <div className="comments-list">
           <h2>Comments ({comments.length})</h2>
           {comments.length > 0 ? (

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import '../shared/styles.css';
+import "../shared/styles.css";
 
 const Videos = () => {
   const [videos, setVideos] = useState([]);
@@ -13,7 +13,7 @@ const Videos = () => {
     try {
       setLoading(true);
       const res = await fetch(
-        `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&maxResults=10&regionCode=US${params}&key=${
+        `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&maxResults=20&regionCode=US${params}&key=${
           import.meta.env.VITE_YT_API
         }`
       );
@@ -58,7 +58,7 @@ const Videos = () => {
       }
       setLoading(true);
       const res = await fetch(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${search}&type=video&key=${
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${search}&type=video&key=${
           import.meta.env.VITE_YT_API
         }`
       );
@@ -67,8 +67,8 @@ const Videos = () => {
     } catch (err) {
       console.log("Error searching ", err);
     } finally {
-      setLoading(false)
-      setSearch('')
+      setLoading(false);
+      setSearch("");
     }
   };
 
@@ -76,19 +76,19 @@ const Videos = () => {
 
   return (
     <div className="container">
-      <div className="content-section">
-        <h2>Videos</h2>
-        <div>
-          <ul className="category-menu">
+      <div className="content-header">
+        <h1>Grab a snack and enjoy some of these videos</h1>
+        <div className="cat-menu">
+          <ul>
             <li>
               <input
                 type="text"
                 placeholder="Search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-              ></input>
-              <button onClick={() => handleSearch(search)}>Search</button>{" "}
+              />
             </li>
+            <li onClick={() => handleSearch(search)}>Search</li>
             <li onClick={fetchPopular}>Popular</li>
             <li onClick={fetchTop}>Entertainment</li>
             <li onClick={fetchMost}>Gaming</li>
@@ -96,25 +96,27 @@ const Videos = () => {
             {isLoggedIn && <li onClick={upVideos}>Upload Article</li>}
           </ul>
         </div>
-        <p>Here are some interesting videos:</p>
       </div>
-      <div className="content-section">
+      <div className="media">
         {videos.map((video) => {
           const videoId = video.id?.videoId || video.id;
           return (
-            <div key={videoId} className="video-card">
-              <Link to={`/video-details/${videoId}`} state={{ 
-                video: {
-                  ...video,
-                  id: videoId
-                } 
-              }}>
+            <div key={videoId} className="media-card">
+              <Link
+                to={`/video-details/${videoId}`}
+                state={{
+                  video: {
+                    ...video,
+                    id: videoId,
+                  },
+                }}
+              >
                 <img
                   src={video.snippet.thumbnails.medium.url}
                   alt={video.snippet.title}
                 />
               </Link>
-              <p>{video.snippet.title}</p>
+              <h3>{video.snippet.title}</h3>
               <p>Channel: {video.snippet.channelTitle}</p>
               {video.statistics ? (
                 <p>{video.statistics.viewCount} views</p>

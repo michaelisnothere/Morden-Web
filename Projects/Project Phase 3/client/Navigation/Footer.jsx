@@ -3,7 +3,7 @@ const Footer = () => {
 
     return(
     <footer className='footer'>
-        <p>Place Holder for imporant links</p>
+        <p>© 2025 Glimpse Michael Rojas</p>
       </footer>
     )
 }

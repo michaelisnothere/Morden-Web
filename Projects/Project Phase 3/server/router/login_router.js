@@ -11,12 +11,10 @@ router.post("/", async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      console.log("No user found");
       return res.status(400).json({ error: "No user found" });
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.log("Incorrect password");
       return res.status(400).json({ error: "Incorrect Password" });
     }
     const token = jwt.sign(
@@ -24,7 +22,6 @@ router.post("/", async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
-    console.log("Login Successful");
     return res.status(200).json({
       message: "Login Successful",
       token,

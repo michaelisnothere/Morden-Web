@@ -22,13 +22,9 @@ router.post("/", authenticateToken, async (req, res) => {
   }
 
   if (comment.length <= 0) {
-    return res
-      .status(400)
-      .json({ error: "Comment must have more than 0 characters." });
+    return res.status(400).json({ error: "Comment must have more than 0 characters." });
   } else if (comment.length > 500) {
-    return res
-      .status(400)
-      .json({ error: "Comment must not exceed 500 characters." });
+    return res.status(400).json({ error: "Comment must not exceed 500 characters." });
   }
 
   if (!contentType || !["video", "article", "picture"].includes(contentType)) {
@@ -51,7 +47,6 @@ router.post("/", authenticateToken, async (req, res) => {
       contentId: contentId,
     };
     user.comments.push(newComment);
-
     await user.save();
     return res.status(201).json({ message: "Comment posted" });
   } catch (err) {
@@ -62,7 +57,6 @@ router.post("/", authenticateToken, async (req, res) => {
 
 router.get("/:contentType/:contentId", async (req, res) => {
   const { contentType, contentId } = req.params;
-  console.log("Fetching comments for:", { contentType, contentId });
   try {
     const users = await User.find({
       "comments.contentType": contentType,

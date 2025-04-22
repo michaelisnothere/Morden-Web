@@ -1,8 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { getAuther } from "../../server/authenticator/auth";
 import { useEffect, useState } from "react";
-import '../shared/styles.css';
-
+import "../shared/detailstyles.css";
 
 const ArticleDetails = () => {
   const { state } = useLocation();
@@ -16,10 +15,11 @@ const ArticleDetails = () => {
     }
     const fetchComments = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/article-details/article/${article.url}`);
+        const res = await fetch(
+          `http://localhost:8000/article-details/article/${article.url}`
+        );
         if (res.ok) {
           const data = await res.json();
-          console.log("Fetched comments:", data.comments);
           setComments(data.comments || []);
         } else {
           console.error("Failed to fetch comments");
@@ -42,7 +42,7 @@ const ArticleDetails = () => {
         body: JSON.stringify({
           comment: userComment,
           contentType: "article",
-          contentId: article.url
+          contentId: article.url,
         }),
       });
       if (!res.ok) {
@@ -64,13 +64,19 @@ const ArticleDetails = () => {
   };
 
   return (
-    <div className="article-container">
-      <div className="content-section">
+    <div className="container">
+      <div className="content-header">
         <h1>{article.title}</h1>
-        <h2>{article.author}</h2>
-        <img src={article.urlToImage} alt={article.title} />
-        <a href={article.url}>{article.url}</a>
+      </div>
+      <div className="content-section">
+        <img
+          className="article-image"
+          src={article.urlToImage}
+          alt={article.title}
+        />
+        <h2>author: {article.author}</h2>
         <p>Read more here</p>
+        <a href={article.url}>{article.url}</a>
       </div>
       <div className="comments-section">
         <h1>Comments</h1>
@@ -80,28 +86,23 @@ const ArticleDetails = () => {
           onChange={(e) => setUserComment(e.target.value)}
           value={userComment}
         />
-        <button
-          onClick={() => {
-            console.log("Uploading comment...");
-            handleComment();
-          }}
-        >
-          Post
-        </button>
+        <button onClick={handleComment}>Post</button>
         <div className="comments-list">
           <h2>Comments ({comments.length})</h2>
           {comments.length > 0 ? (
             comments.map((comment) => (
               <div key={comment._id} className="comment">
                 <p className="comment-user">
-                  <strong>{comment.username || "Anonymous"}</strong> •
+                  <strong>{comment.username}</strong> •{" "}
                   {new Date(comment.date).toLocaleString()}
                 </p>
                 <p className="comment-content">{comment.content}</p>
               </div>
             ))
           ) : (
-            <p>No comments yet. Be the first to comment!</p>
+            <p style={{ paddingBottom: 20 }}>
+              No comments yet. Be the first to comment!
+            </p>
           )}
         </div>
       </div>

@@ -9,13 +9,11 @@ const Images = () => {
   const isLoggedIn = !!localStorage.getItem("token");
   const [search, setSearch] = useState('')
 
-  //stand in for database uploaded images, pixabay will be used to simlate user uploads
-
   const fetchPictures = async (params = "") => {
     try {
       setLoading(true);
       const res = await fetch(
-        `https://pixabay.com/api/?key=${import.meta.env.VITE_PX_API}&q=${params}&image_type=photo&per_page=10&order=popular&safesearch=true`
+        `https://pixabay.com/api/?key=${import.meta.env.VITE_PX_API}&q=${params}&image_type=photo&per_page=20&order=popular&safesearch=true`
       );
       const data = await res.json();
       setPictures(data.hits || []);
@@ -80,16 +78,16 @@ const Images = () => {
 
   return (
     <div className="container">      
-      <div className="content-section">
-        <h2>Images</h2>
-        <div>
-          <ul className="category-menu">
+      <div className="content-header">
+        <h1>Feeling artsy or curious? Take a look at these</h1>
+        <div className="cat-menu">
+          <ul>
             <li>
               <input type="text" 
               placeholder="Search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}></input>
-              <button onClick={() => handleSearch()}>Search</button>
+              <li onClick={() => handleSearch(search)}>Search</li>
             </li>
             <li onClick={fetchPopular}>Popular</li>
             <li onClick={fetchNature}>Nature</li>
@@ -98,16 +96,14 @@ const Images = () => {
             {isLoggedIn && <li onClick={upVideos}>Upload Article</li>}
           </ul>
         </div>
-        <p>This is where text about Images will go</p>
       </div>
-      <div className="content-section">
+      <div className="media">
         {pictures.map((picture) => (
-          <div key={picture.id} className="image-card">
+          <div key={picture.id} className="media-card">
             <Link to={`/image-details/${picture.id}`} state={{ picture }}>
             <img
               src={picture.webformatURL}
               alt={picture.tags}
-              className="image"
             />
             </Link>
             <p>Tags: {picture.tags}</p>

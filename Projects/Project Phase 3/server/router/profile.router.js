@@ -6,8 +6,7 @@ const jwt = require("jsonwebtoken");
 const authToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   if (!authHeader) {
-    console.log("No token found");
-    return res.status(401).json({ error: "Access Denied" });
+    return res.status(401).json({ error: "no token" });
   }
   const token = authHeader.startsWith("Bearer ")
     ? authHeader.substring(7)
@@ -15,10 +14,8 @@ const authToken = (req, res, next) => {
   try {
     const verified = jwt.verify(token, process.env.JWT_SECRET);
     req.user = verified;
-    console.log("Token verified");
     next();
   } catch (err) {
-    console.log("Invalid token");
     return res.status(400).json({ error: "Invalid token" });
   }
 };
@@ -27,11 +24,8 @@ router.get("/", authToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
     if (!user) {
-      console.log("User not found??");
       return res.status(401).json({ error: "user not found" });
     }
-    console.log("User found");
-    console.log(user);
     return res.status(200).json({ user });
   } catch (err) {
     console.log(err);
@@ -48,11 +42,9 @@ router.put("/", authToken, async (req, res) => {
       { new: true, runValidators: true }
     ).select("-password");
     if (!updatedUser) {
-      console.log("User not found");
       return res.status(401).json({ error: "user not found" });
     }
     res.status(200).json({ user: updatedUser });
-    console.log("User updated");
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "server error" });
@@ -62,13 +54,10 @@ router.put("/", authToken, async (req, res) => {
 router.delete("/", authToken, async (req, res) => {
   try {
     const deleteUser = await User.findByIdAndDelete(req.user.id);
-
     if (!deleteUser) {
-      console.log("user Not Found");
       return res.status(410).json({ error: "user not found" });
     }
     res.status(200).json({ message: "user Deleted" });
-    console.log("User Deleted");
   } catch (err) {
     console.log(err);
   }
@@ -78,7 +67,7 @@ router.delete("/comment", authToken, async (req, res) => {
   try {
     const { commentId } = req.body;
     if (!commentId) {
-      return res.status(400).json({ error: "Comment not Found" });
+      return res.status(400).json({ error: "comment not Found" });
     }
     const user = await User.findById(req.user.id);
     if (!user) {
@@ -88,10 +77,10 @@ router.delete("/comment", authToken, async (req, res) => {
       (comment) => comment._id.toString() !== commentId
     );
     await user.save();
-    res.status(200).json({ message: "Comment deleted successfully.", user });
+    res.status(200).json({ message: "comment deleted", user });
   } catch (err) {
-    console.log("Error deleting comment:", err);
-    res.status(500).json({ error: "Server error" });
+    console.log("error deleting comment:", err);
+    res.status(500).json({ error: "server error" });
   }
 });
 

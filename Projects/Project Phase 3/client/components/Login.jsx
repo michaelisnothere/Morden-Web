@@ -41,9 +41,9 @@ const Login = () => {
   };
 
   return (
-    <div className="container">
-      <div className="content">
-        <h2>Login Page</h2>
+    <div className="login-container">
+      <div className="login-menu">
+        <h2>Login or Register</h2>
         <div className="login">
           <p>
             <input
@@ -65,7 +65,7 @@ const Login = () => {
           <ul>
             <li>
               <button onClick={handleLogin}>Login</button>
-              <button onClick={clearFields}>Clear</button>
+              <button style={{marginTop: 30}} onClick={clearFields}>Clear</button>
             </li>
             <li>
               <button onClick={() => navigate("/register")}>Register</button>
