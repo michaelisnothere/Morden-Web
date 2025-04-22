@@ -1,5 +1,5 @@
 import { useState } from "react";
-import '../shared/styles.css';
+import "../shared/upload.css";
 
 const Upload = () => {
   const [postType, setPostType] = useState("");
@@ -40,7 +40,9 @@ const Upload = () => {
 
   return (
     <div className="container">
-      <h1>Upload Page</h1>
+      <div className="content-header">
+        <h1>Wanna Share?</h1>
+      </div>
       <div className="content-section">
         <h2>Upload your own post!</h2>
         <div>

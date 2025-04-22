@@ -24,7 +24,7 @@ const Register = () => {
         if (res.ok) {
           return res.json();
         } else {
-          throw new Error("Failed to create user");
+          console.log("Failed to create user");
         }
       })
       .then((data) => {
@@ -39,9 +39,12 @@ const Register = () => {
     setEmail("");
   };
 
+  const isValidEmail = (email) => {
+    return email.includes("@");
+  };
   return (
-    <div className="container">
-      <div className="content">
+    <div className="login-container">
+      <div className="login-menu">
         <h2>Enter in Info Below</h2>
         <div className="login">
           <p>
@@ -74,6 +77,8 @@ const Register = () => {
                 onClick={() => {
                   if (username === "" || password === "" || email === "") {
                     alert("Please fill out all fields");
+                  } else if (!isValidEmail(email)) {
+                    alert("Please enter a valid email address");
                   } else {
                     handleCreate();
                     console.log("User Created");

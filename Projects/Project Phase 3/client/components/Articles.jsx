@@ -65,10 +65,10 @@ const Articles = () => {
   if (loading) return <div>Loading...</div>;
   return (
     <div className="container">
-      <div className="content-section">
-        <h2>Articles</h2>
-        <div>
-          <ul className="category-menu">
+      <div className="content-header">
+        <h1>Want something with more substance?</h1>
+      <div>
+          <ul className="cat-menu">
             <li>
               <input type="text" placeholder="Search" 
               value={search}
@@ -82,16 +82,14 @@ const Articles = () => {
             {isLoggedIn && <li onClick={uploadArticle}>Upload Article</li>}
           </ul>
         </div>
-        <p>This is where text about articles will go</p>
       </div>
-      <div className="content-section">
+      <div className="media">
         {articles.map((article) => (
-          <div key={article.url} className="article-card">
+          <div key={article.url} className="media-card">
           <Link to='/article-details' state={{ article }}> 
             <img
               src={article.urlToImage}
               alt={article.title}
-              className="article-image"
             />
             </Link>
             <h3>{article.title}</h3>
